@@ -1,0 +1,121 @@
+{
+  "scope": "RTL simulation of preserved student sources; failures are retained",
+  "tests": [
+    {
+      "name": "original-bist",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    },
+    {
+      "name": "sweep-bist",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "GOOD_FLAG 0\nRESULT normal_bad=0 detection_bad=0 location_bad=0 repair_bad=0 faults=160",
+      "stderr": "",
+      "counts": {
+        "normal_bad": 0,
+        "detection_bad": 0,
+        "location_bad": 0,
+        "repair_bad": 0,
+        "faults": 160
+      }
+    },
+    {
+      "name": "original-bisr",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    },
+    {
+      "name": "sweep-bisr",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "GOOD_FLAG 0\nREPAIR_FAIL loc=0 pin=1 value=1 result=1359\nREPAIR_FAIL loc=0 pin=3 value=0 result=1356\nREPAIR_FAIL loc=1 pin=1 value=1 result=1361\nREPAIR_FAIL loc=1 pin=3 value=1 result=1359\nREPAIR_FAIL loc=2 pin=1 value=1 result=1365\nREPAIR_FAIL loc=2 pin=3 value=1 result=1361\nREPAIR_FAIL loc=3 pin=1 value=1 result=1373\nREPAIR_FAIL loc=3 pin=3 value=1 result=1365\nREPAIR_FAIL loc=4 pin=1 value=0 result=1325\nREPAIR_FAIL loc=4 pin=3 value=1 result=1373\nREPAIR_FAIL loc=5 pin=1 value=0 result=1293\nREPAIR_FAIL loc=5 pin=3 value=0 result=1325\nREPAIR_FAIL loc=6 pin=1 value=1 result=1485\nREPAIR_FAIL loc=6 pin=3 value=0 result=1293\nREPAIR_FAIL loc=7 pin=1 value=1 result=1613\nREPAIR_FAIL loc=7 pin=3 value=1 result=1485\nREPAIR_FAIL loc=8 pin=1 value=1 result=1869\nREPAIR_FAIL loc=8 pin=3 value=1 result=1613\nREPAIR_FAIL loc=9 pin=1 value=1 result=2381\nREPAIR_FAIL loc=9 pin=3 value=1 result=1869\nREPAIR_FAIL loc=10 pin=1 value=1 result=3405\nREPAIR_FAIL loc=10 pin=3 value=1 result=2381\nREPAIR_FAIL loc=11 pin=1 value=1 result=5453\nREPAIR_FAIL loc=11 pin=3 value=1 result=3405\nREPAIR_FAIL loc=12 pin=1 value=1 result=9549\nREPAIR_FAIL loc=12 pin=3 value=1 result=5453\nREPAIR_FAIL loc=13 pin=1 value=1 result=17741\nREPAIR_FAIL loc=13 pin=3 value=1 result=9549\nREPAIR_FAIL loc=14 pin=1 value=1 result=34125\nREPAIR_FAIL loc=14 pin=2 value=0 result=16\nREPAIR_FAIL loc=14 pin=2 value=1 result=17741\nREPAIR_FAIL loc=14 pin=3 value=1 result=17741\nREPAIR_FAIL loc=14 pin=4 value=0 result=16\nREPAIR_FAIL loc=14 pin=4 value=1 result=17741\nREPAIR_FAIL loc=14 pin=5 value=0 result=16\nREPAIR_FAIL loc=14 pin=5 value=1 result=17741\nREPAIR_FAIL loc=15 pin=3 value=1 result=34125\nRESULT normal_bad=0 detection_bad=0 location_bad=34 repair_bad=37 faults=160",
+      "stderr": "",
+      "counts": {
+        "normal_bad": 0,
+        "detection_bad": 0,
+        "location_bad": 34,
+        "repair_bad": 37,
+        "faults": 160
+      }
+    },
+    {
+      "name": "original-signature-a",
+      "compile_exit": 0,
+      "compiler_messages": "hw2\\code\\Sub_module.v:37: warning: implicit definition of wire 'b'.\n",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    },
+    {
+      "name": "observed-signature-a",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "output": "SIGNATURE 1100"
+    },
+    {
+      "name": "original-signature-b",
+      "compile_exit": 0,
+      "compiler_messages": "hw2\\code\\Sub_module.v:37: warning: implicit definition of wire 'b'.\n",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    },
+    {
+      "name": "observed-signature-b",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "output": "SIGNATURE 0101"
+    },
+    {
+      "name": "original-lfsr",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "PASS",
+      "stderr": ""
+    },
+    {
+      "name": "lfsr-uniqueness",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "RESULT unique_nonzero=63 duplicates=0 zero_seen=0 sum=2016 returned_seed=1",
+      "stderr": ""
+    },
+    {
+      "name": "legacy-bist",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    },
+    {
+      "name": "legacy-bisr",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    },
+    {
+      "name": "legacy-alternate-bisr-elaboration",
+      "compile_exit": 0,
+      "compiler_messages": "",
+      "run_exit": 0,
+      "output": "",
+      "stderr": ""
+    }
+  ],
+  "functional_errors_observed": 71,
+  "exit_policy": "Default exit status tests execution only. Use --fail-on-functional-errors to fail for the preserved reference bugs."
+}

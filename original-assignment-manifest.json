@@ -1,0 +1,32 @@
+[
+  {
+    "path": "homework/cedar-8f2c/hw1/homework_1.pdf",
+    "bytes": 16155,
+    "sha256": "3e5f60354c41b5ff037ea8c04507d1e44a35880964964551b0eb4e6fa60f7f2b"
+  },
+  {
+    "path": "homework/cedar-8f2c/hw2/homework_2.pdf",
+    "bytes": 19718,
+    "sha256": "98ffbb92a76d750a341b02484368b1bd497ce71ddd4ca7807f14f173d32b353d"
+  },
+  {
+    "path": "homework/cedar-8f2c/hw3/homework_3.pdf",
+    "bytes": 25754,
+    "sha256": "3ac18551ddea4a02d9cada265754ab6e86dc4eef432d19e782c28b4c952be0f1"
+  },
+  {
+    "path": "homework/quartz-4b7e/hw1/homework_1.pdf",
+    "bytes": 17515,
+    "sha256": "dcbf20775c9ab00251c59e37ca868fb34bae880aa480c955784994519bd28c3c"
+  },
+  {
+    "path": "homework/quartz-4b7e/hw2/homework_2.pdf",
+    "bytes": 23362,
+    "sha256": "6680346a4be8567ffd9122663a7a36164a0681334df3b52a5c3422f02875f4d7"
+  },
+  {
+    "path": "homework/quartz-4b7e/hw3/homework_3.pdf",
+    "bytes": 162353,
+    "sha256": "b08da556269915f1fe2251e5af5bba5aabc38ee381bdfdc3d8e23d3a94a2a987"
+  }
+]

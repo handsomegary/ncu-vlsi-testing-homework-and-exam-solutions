@@ -1,0 +1,75 @@
+{
+  "collection": "Quartz-4b7e",
+  "checks": {
+    "hw1_arithmetic": 520,
+    "hw1_bist_protocol": 3,
+    "hw1_q3_truth_table_and_counterexamples": 10,
+    "hw2_exhaustive_fault_controls": 1280,
+    "hw2_report_detected_sets": 5,
+    "hw3_circuit_truth_table": 32,
+    "hw3_lfsr_states": 30,
+    "hw3_cpp_response_streams": 15,
+    "original_bench_smoke_with_fsdb_calls_omitted": 5
+  },
+  "known_issues": [
+    "BIST failure indication is not sticky",
+    "BIST counter ignores En",
+    "BIST patterns miss FA0 input triples 001 and 110",
+    "Report's A/0 and w1/0 undetected claims have counterexamples",
+    "HW3 circuit produces F=0 for 0001 while statement specifies F=1",
+    "HW3 faulty RTL signature is 1010, contradicting report's 0010 and bit list"
+  ],
+  "hw2_detected_sets": {
+    "10101": [
+      "A/0",
+      "F/1",
+      "L/1",
+      "M/1"
+    ],
+    "10010": [
+      "A/0",
+      "F/1",
+      "I/1",
+      "K/1",
+      "L/1",
+      "M/1"
+    ],
+    "00010": [
+      "A/1",
+      "F/0",
+      "J/1",
+      "L/0"
+    ],
+    "10100": [
+      "A/0",
+      "F/1",
+      "I/1",
+      "K/1",
+      "L/1",
+      "M/1"
+    ],
+    "01011": [
+      "A/1",
+      "D/0",
+      "F/0",
+      "G/1",
+      "I/1",
+      "J/1",
+      "L/0"
+    ]
+  },
+  "hw3_student_streams": [
+    "000010001000111",
+    "000000000000101"
+  ],
+  "hw3_student_signatures": [
+    "0011",
+    "1010"
+  ],
+  "hw3_cpp_unmodified_compiler_warnings": true,
+  "hw3_compaction_undetected": [
+    "d/1"
+  ],
+  "total_checks": 1900,
+  "status": "PASS: preserved behavior and documented defects reproduced"
+}

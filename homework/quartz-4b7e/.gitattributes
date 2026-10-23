@@ -1,0 +1,5 @@
+# Preserve archived student source bytes, including original line endings.
+hw1/source/* -text
+hw2/source/* -text
+hw3/source/* -text
+*.pdf binary

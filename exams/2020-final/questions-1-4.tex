@@ -1,0 +1,105 @@
+\section{Short questions (30 points)}
+\subsection{Must-repair allocation (5 points)}
+\question{Heuristic redundancy analysis commonly has a must-repair phase followed by a final-repair phase. State the allocation rules of the must-repair phase.}
+\answer Let $R$ and $C$ be the remaining spare-row and spare-column counts. If one faulty row contains faults in more than $C$ distinct columns, column replacement alone cannot cover them. That row must receive a spare row. Similarly, a column containing faults in more than $R$ distinct rows must receive a spare column. After an allocation, remove the faults it covers, decrease the relevant spare count, and repeat the rules with the updated counts. A required allocation with no corresponding spare available proves failure under the available resources. When neither rule applies, the final-repair phase chooses how to cover the remaining faults. A heuristic choice in that later phase need not find every feasible allocation.
+
+\subsection{Solid backgrounds in word memories (5 points)}
+\question{Why does a bit-oriented March test using only all-zero and all-one backgrounds fail to cover all coupling faults in a word-oriented memory?}
+\answer A word write changes several cells together. Solid backgrounds give the same value to every bit in a word, so they do not distinguish a victim bit from an aggressor bit at another position. Intra-word coupling that requires opposite states, or a transition of one bit while another has a particular state, can escape those backgrounds or be masked by simultaneous writes. Complementary striped backgrounds separate pairs of bit positions. Inter-word coupling and intra-word coupling must both be considered when converting the bit-oriented test.
+
+\subsection{Built-in self-diagnosis output (5 points)}
+\question{What information should a built-in self-diagnosis circuit export for subsequent diagnosis analysis?}
+\answer Export the failing address, the failing bit positions or the expected-data XOR actual-data mask, and enough test context to interpret a failure. Useful context includes the applied background, the read/write operation, the March element or cycle, and the observed/expected values. This permits reconstruction of faulty rows and columns and distinguishes different manifestations of a fault. If information is compressed or stored in a bounded buffer, export its validity and overflow status. The diagnosis circuit measures the failures. The redundancy analyzer separately decides which spare rows or columns to allocate.
+
+\subsection{Concurrent and non-concurrent online BIST (5 points)}
+\question{Explain concurrent and non-concurrent online BIST.}
+\answer Concurrent online BIST checks a circuit while its normal functional operations continue, for example by monitoring functional responses. Non-concurrent online BIST schedules dedicated test activity in idle intervals or temporarily suspends the relevant normal operation. Both belong to online testing, but the second needs a testing interval that does not overlap the protected function's normal work.
+
+\subsection{DRAM retention test (5 points)}
+\question{A DRAM has a 32 ms refresh period. Give a March test that detects both stuck-at polarities and the modeled data-retention faults.}
+\answer Disable refresh for the tested cells during each retention interval. Let $t_h$ be at least 32 ms, with an appropriate implementation margin. One test is
+\[
+\march{\any(w0);\ \mathrm{wait}(t_h);\ \up(r0,w1);\ \mathrm{wait}(t_h);\ \up(r1)}.
+\]
+The first write and subsequent zero comparison detect cells that cannot store zero, including stuck-at-one faults. The one write and final one comparison detect stuck-at-zero faults. Each polarity is also held without refresh before it is read. Wait until after the entire preceding write pass has finished, so even the last-written cell receives the required hold time. The access cost is $4N$, plus two retention waits. This establishes coverage of the specified retention model at the chosen hold condition, not every possible analog leakage behavior or operating condition.
+
+\subsection{Fuse and antifuse (5 points)}
+\question{How do fuse and antifuse one-time programmable memories differ?}
+\answer A fuse starts as a conducting link and programming opens that link. An antifuse starts as an insulating connection and programming creates a conducting path. Both preserve the programmed state without power and are normally one-time programmable. The sense circuitry interprets the opposite initial and programmed electrical states accordingly.
+
+\section{Eight-bit word-oriented March C-minus (10 points)}
+\question{Convert the supplied March C-minus test into a test for eight-bit words that covers inversion, idempotent, and state coupling faults.}
+\answer A straightforward conversion uses four standard backgrounds and their complements:
+\[
+D\in\{\bits{00000000},\bits{01010101},\bits{00110011},\bits{00001111}\}.
+\]
+For each $D$, execute the complete sequence
+\[
+C^-(D)=\left\{\begin{aligned}
+&\any(wD);\ \up(rD,w\overline D);\ \up(r\overline D,wD);\\
+&\dn(rD,w\overline D);\ \dn(r\overline D,wD);\ \any(rD)
+\end{aligned}\right\}.
+\]
+This gives $4\times10N=40N$ word operations. It is a straightforward construction rather than an optimized compact conversion.
+
+The solid background supplies equal-state combinations. For any two distinct bit positions, their three-bit position indices differ in at least one coordinate. One of the striped backgrounds therefore puts those two positions at opposite values, and its complement reverses their values. The complete set supplies the required equal and opposite pair conditions. Running both upward and downward March elements supplies both address orders for inter-word aggressor/victim relationships. Together these are the conventional background and ordering conditions for the named unlinked coupling-fault classes.
+
+\begin{center}
+\begin{tabular}{cll}
+\toprule Background & Complement & Separation of bit positions\\\midrule
+00000000&11111111&Equal-state reference\\
+01010101&10101010&Alternating adjacent positions\\
+00110011&11001100&Groups of two positions\\
+00001111&11110000&Groups of four positions\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Components of RAM BISR (10 points)}
+\question{Explain the built-in self-test, built-in redundancy analyzer, and reconfiguration mechanism in a RAM self-repair system.}
+\answer The BIST controller applies memory operations, generates addresses and data, compares the read data, and records a fault map or repair-relevant failure information. The built-in redundancy analyzer (BIRA) uses that information and the available spare resources to produce a row/column allocation, or to report that the selected repair strategy has failed. The reconfiguration mechanism stores and applies the allocation, redirecting accesses from faulty locations to spare rows, columns, or words. Repeating the test after reconfiguration checks the resulting memory operation.
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[>=Latex,b/.style={draw,align=center,minimum width=33mm,minimum height=12mm},font=\small]
+\node[b] (bist) {Memory BIST\\generate and compare};
+\node[b,right=13mm of bist] (bira) {BIRA\\allocate spares};
+\node[b,right=13mm of bira] (config) {Reconfiguration\\store and redirect};
+\draw[->](bist)--node[above]{fault map}(bira);
+\draw[->](bira)--node[above]{repair map}(config);
+\draw[->](config.south)--++(0,-9mm)-|node[pos=.5,below]{test the repaired memory}(bist.south);
+\end{tikzpicture}
+\caption{Functions in a memory self-repair flow.}
+\end{figure}
+
+\section{Repair configuration and fuse sensing (15 points)}
+\subsection{Three reconfiguration mechanisms (10 points)}
+\question{List three memory-repair reconfiguration mechanisms and give their advantages and disadvantages.}
+\answer The course distinction is soft, firm, and hard reconfiguration.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{18mm}>{\raggedright\arraybackslash}p{40mm}>{\raggedright\arraybackslash}p{40mm}>{\raggedright\arraybackslash}p{42mm}}
+\toprule Type&Repair information&Advantages&Limitations\\\midrule
+Soft&Volatile flip-flops or configuration registers&Can recompute and reload repair maps more than once; little nonvolatile-storage overhead&Map is lost at power-off, so boot may require retest and analysis. A latent defect arising between repair runs remains until another run.\\[1mm]
+Firm&Programmable nonvolatile memory&Retains a repair map and can support repeated repair updates when the storage technology is rewritable&Needs the nonvolatile storage and its programming support, often including programming voltages and circuitry.\\[1mm]
+Hard&Permanently programmed fuses or equivalent links&Retains the map and permits short setup by loading or sensing it&One-time repair configuration cannot generally be revised after the relevant links are consumed.\\
+\bottomrule
+\end{tabular}\end{center}
+The exact area and setup-time tradeoffs depend on the chosen implementation. These mechanisms concern how the repair map is retained and activated, rather than the particular address comparator or data multiplexer topology.
+
+\subsection{Read the fuse into a flip-flop (5 points)}
+\question{Explain how the shown fuse cell transfers its stored state to the D flip-flop. The fuse connects node $a$ to a pull-down NMOS. Read controls the upper PMOS and lower NMOS, Reset discharges $a$, and a Read-controlled multiplexer selects either feedback $Q$ or node $a$.}
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[>=Latex,font=\small,b/.style={draw,align=center,minimum height=8mm,minimum width=25mm}]
+\node[b] (pre) {PMOS pull-up\\on if Read=0};
+\node[below=8mm of pre] (a) {$a$};
+\node[b,below=8mm of a] (fuse) {Fuse};
+\node[b,below=6mm of fuse] (pull) {NMOS to ground\\on if Read=1};
+\node[b,left=18mm of a] (reset) {Reset pull-down};
+\node[b,right=18mm of a] (mux) {MUX\\0: $Q$, 1: $a$};
+\node[b,right=11mm of mux] (ff) {D flip-flop};
+\draw[->](pre)--(a);\draw(a)--(fuse);\draw(fuse)--(pull);
+\draw(reset)--(a);\draw[->](a)--(mux);\draw[->](mux)--(ff);
+\draw[->](ff.east)--++(6mm,0)coordinate(q)node[right]{$F_{\rm out}$};
+\draw[->](q)--++(0,13mm)-|(mux.north);
+\end{tikzpicture}
+\caption{Editable functional reconstruction of the fuse-sense circuit. The upper and lower devices share Read.}
+\end{figure}
+\answer First clear node $a$ using Reset, then release Reset. Set Read=0 to turn on the PMOS while the lower NMOS is off. This precharges $a$ to one, and the multiplexer recirculates the flip-flop's previous $Q$ value. Next set Read=1. The PMOS turns off and the lower NMOS turns on. An intact fuse discharges $a$ to zero, whereas a blown fuse leaves $a$ at its precharged one. After the sense node settles, clock the D flip-flop while Read=1 so the multiplexer selects $a$. Finally return Read to zero to hold the sampled value through the feedback input. Precharge is essential: resetting $a$ to zero and immediately evaluating cannot distinguish an open fuse that otherwise retains zero. The sample must occur within the valid dynamic-node retention interval.

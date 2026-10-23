@@ -1,0 +1,26 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=22mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,booktabs,longtable,array,graphicx,tikz,xcolor,hyperref}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\hypersetup{pdftitle={VLSI Testing - 2020 Final - Reconstructed Questions and Solutions},pdfauthor={},colorlinks=true,linkcolor=blue,urlcolor=blue}
+\newcommand{\question}[1]{\paragraph{Question.}#1}
+\newcommand{\answer}{\paragraph{Solution.}}
+\newcommand{\bits}[1]{\texttt{#1}}
+\newcommand{\march}[1]{\ensuremath{\left\{#1\right\}}}
+\newcommand{\up}{\mathord{\uparrow}}
+\newcommand{\dn}{\mathord{\downarrow}}
+\newcommand{\any}{\mathord{\updownarrow}}
+\setlength{\emergencystretch}{2em}
+\title{VLSI Testing\\2020 Final\\Reconstructed Questions and Solutions}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\noindent This study edition rebuilds the three supplied exam pages as editable text, tables, and diagrams. Questions are paraphrased without changing their technical conditions or printed point values. Solutions are independently reasoned and checked where a finite model is practical. The accompanying student material serves only as a reference. In particular, the BILBO mode interpretation and the TAM routing constraints are examined rather than copied from the handwritten answers.
+\par\medskip
+\noindent\textbf{Notation.} In a March element, $wD$ writes data background $D$ and $rD$ reads and compares against $D$. Arrows denote increasing, decreasing, or either address order. $N$ is the number of addressed words. Complements and XOR operations in Boolean recurrences act bitwise. Fault-coverage statements refer to the conventional single-fault models named in the question.
+\input{questions-1-4}
+\input{questions-5-6}
+\input{question-7}
+\end{document}

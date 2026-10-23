@@ -1,0 +1,82 @@
+\section{March-test consistency and coverage (10 points)}
+\subsection{Correct read expectations (5 points)}
+\question{Identify the correct March tests and explain the answer. The four candidates are listed below.}
+\begin{align*}
+M_1&=\march{\any(w0);\up(r0,w1,r1);\dn(r0,w0,r0)},\\
+M_2&=\march{\any(w0);\up(r1,w0,r0);\dn(r1,w0,r0)},\\
+M_3&=\march{\any(w1);\up(r1,w0,r0);\dn(r0,w1,r1)},\\
+M_4&=\march{\any(w1);\up(r1,w1,r1);\dn(r1,w0,r0)}.
+\end{align*}
+\answer The consistent tests are $M_3$ and $M_4$. A fault-free memory must satisfy every read expectation. In $M_1$, the upward element leaves every cell at one, but the first downward read expects zero. In $M_2$, initialization writes zero and the next read already expects one. In $M_3$, each element's first read matches the preceding element's last write, and reads after a write match that write. The same condition holds in $M_4$. Its repeated write-one is redundant, but redundancy does not make a test logically inconsistent. A consistent test is not automatically a complete test for every fault model.
+
+\subsection{Identical SAF, AF, and TF coverage (5 points)}
+\question{Find the two tests with identical coverage of stuck-at faults, address-decoder faults, and transition faults.}
+\begin{align*}
+T_1&=\march{\any(w1);\up(r1,w0);\dn(r0,w1,r1)},\\
+T_2&=\march{\any(w0);\up(r0,w1);\dn(r1,w0)},\\
+T_3&=\march{\any(w0);\up(r0,w1);\dn(r1,w0,r0)}.
+\end{align*}
+\answer Choose $T_1$ and $T_3$. Complementing every data value maps $T_1$ exactly to $T_3$. The named fault classes include both data polarities, so this transformation preserves their class coverage. Both stuck-at polarities are observed, and both write-transition directions have a later read that checks the transition. Opposite address orders also provide the corresponding address-decoder sensitization conditions.
+
+$T_2$ has no read after the final downward write-zero. A cell with a failing $1\rightarrow0$ transition can pass the preceding read-one and then finish the test incorrectly at one without being checked. Thus $T_2$ does not have the same complete transition-fault coverage. The finite two-cell model in the repository checks both transition polarities and the consistency classifications above. The data-complement argument establishes the symmetry of $T_1$ and $T_3$ for the symmetric AF class as well.
+
+\section{BILBO configuration and polynomial (10 points)}
+\question{A circuit is partitioned into three combinational blocks separated by three identical BILBO registers. In test mode the blocks can be tested individually. The BILBO gate network has four flip-flops, parallel inputs $Z_1,\ldots,Z_4$, controls $B_1,B_2$, a serial input multiplexer, and feedback taps from the last three flip-flops. (a) Configure BILBO1 and BILBO2 to test block 1. (b) Give the characteristic polynomial.}
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[>=Latex,font=\small,b/.style={draw,align=center,minimum height=10mm,minimum width=27mm}]
+\node[b] (b1) {BILBO1};
+\node[b,right=15mm of b1] (c1) {Combinational\\block 1};
+\node[b,right=15mm of c1] (b2) {BILBO2};
+\node[b,below=16mm of b2] (c2) {Combinational\\block 2};
+\node[b,left=15mm of c2] (b3) {BILBO3};
+\node[b,left=15mm of b3] (c3) {Combinational\\block 3};
+\draw[->](b1)--(c1);\draw[->](c1)--(b2);\draw[->](b2)--(c2);
+\draw[->](c2)--(b3);\draw[->](b3)--(c3);\draw[->](c3)--(b1);
+\end{tikzpicture}
+\caption{The three BILBO boundaries and combinational blocks. Each BILBO has a four-bit parallel data interface.}
+\end{figure}
+
+\subsection{Explicit gate interpretation}
+The photographed control labels are partly obscured by handwriting. The following interpretation states the multiplexer convention explicitly: $B_1=0$ selects ScanIn, and $B_1=1$ selects feedback. This is also visible in the clearer matching BILBO circuit supplied with the later exam. Number the flip-flops $q_1$ through $q_4$ from left to right. The feedback is
+\[
+F=q_2\oplus q_3\oplus q_4.
+\]
+Let $u$ be ScanIn when $B_1=0$ and $F$ when $B_1=1$. The depicted NOR and XOR gates give
+\begin{align*}
+q_1^+&=\overline{u\lor B_2}\oplus(B_1Z_1),\\
+q_i^+&=\overline{q_{i-1}\lor B_2}\oplus(B_1Z_i),\qquad i=2,3,4.
+\end{align*}
+These equations define the rebuilt circuit without relying on a memorized BILBO mode table.
+\begin{center}\small
+\begin{tabular}{ccp{100mm}}
+\toprule $B_1$&$B_2$&Behavior for the depicted gates\\\midrule
+0&0&Inverting serial shift: $q_1^+=\overline{\mathrm{ScanIn}}$, $q_i^+=\overline{q_{i-1}}$.\\
+0&1&Clear on the clock, since all four next-state values are zero.\\
+1&0&Feedback with parallel response injection: an affine MISR. With all $Z_i=0$, it becomes an autonomous affine pattern source.\\
+1&1&Parallel register operation, $q_i^+=Z_i$.\\
+\bottomrule
+\end{tabular}\end{center}
+
+\subsection{Part (a): Source and observer}
+BILBO1 must supply known patterns to block 1, and BILBO2 must compact block 1's responses. For the displayed convention, BILBO2 uses $(B_1,B_2)=(1,0)$. BILBO1 can use the same controls as a pattern source only when its parallel inputs are held at zero or equivalently isolated from response injection. Load a known initial state, accounting for the inversions in serial mode, apply the prescribed number of clocks, and compare BILBO2's final signature with the good-circuit signature for the same seed and clock count.
+
+\textbf{Circuit limitation.} The block diagram alone does not show a mechanism that clamps BILBO1's four parallel inputs. If these inputs remain driven by combinational block 3, setting $(1,0)$ makes BILBO1 a response-fed register rather than an independent PRPG. Therefore the control pair alone does not prove the claimed independent test operation. An answer assigning $(0,0)$ to autonomous PRPG operation would also conflict with the serial-input selection and NOR gates as interpreted above. The additional input-isolation condition must be stated rather than silently assumed.
+
+\subsection{Part (b): Polynomial and bit convention}
+For $(B_1,B_2)=(1,0)$, the zero-input state update has the form
+\[
+q^+=Aq+\boldsymbol{1},\qquad
+A=\begin{bmatrix}
+0&1&1&1\\1&0&0&0\\0&1&0&0\\0&0&1&0
+\end{bmatrix}
+\quad\text{over }GF(2).
+\]
+The characteristic polynomial of its \emph{linear part} in this left-to-right state convention is
+\[
+\boxed{p(x)=\det(xI-A)=x^4+x^2+x+1.}
+\]
+Describing the same tap connection in the opposite serial/polynomial direction gives the reciprocal feedback polynomial
+\[
+x^4p(x^{-1})=x^4+x^3+x^2+1.
+\]
+Both expressions require their convention to be stated. The NOR gates add the constant vector, so the complete register update is affine rather than a purely linear LFSR. Moreover $p(1)=0$, so the linear polynomial is not primitive and a maximal 15-state linear sequence must not be claimed from this diagram.

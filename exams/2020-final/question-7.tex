@@ -1,0 +1,127 @@
+\section{Wrapped cores, TAP control, and TAM (25 points)}
+\question{Two IEEE 1500-wrapped cores connect to an IEEE 1149.1 interface. Decoder 1 produces wrapper control signals from the TAP controller and instruction register. A three-bit daisy-chain TAM carries test data. The four internal scan chains have lengths 120, 240, 240, and 120 bits. Both cores use the same operating frequency and power supply.}
+
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[>=Latex,font=\small,b/.style={draw,align=center,minimum width=34mm,minimum height=11mm}]
+\node[b] (c1) {Core 1\\wrapped logic};
+\node[b,right=37mm of c1] (c2) {Core 2\\wrapped logic};
+\node[b,above=10mm of c1] (w1) {WIR1 and WBR1};
+\node[b,above=10mm of c2] (w2) {WIR2 and WBR2};
+\node[b,below=14mm of $(c1)!.5!(c2)$] (tap) {TAP and instruction register\\Decoder 1: wrapper control\\Decoder 2: selected data register};
+\draw[->](c1.east)--node[above,align=center]{four interconnections\\and user-defined logic}(c2.west);
+\draw[->](w1)--(c1);\draw[->](w2)--(c2);
+\draw[<-](w1.west)--++(-12mm,0)node[left]{WSI};
+\draw[->](w1)--node[above]{serial wrapper path}(w2);
+\draw[->](w2.east)--++(12mm,0)node[right]{WSO};
+\draw[->](tap.north west)-|(w1.south west);
+\draw[->](tap.north east)-|(w2.south east);
+\end{tikzpicture}
+\caption{Rebuilt logical organization. WIR is the wrapper instruction register and WBR is the wrapper boundary register. The parallel TAM routing is shown separately below.}
+\end{figure}
+
+\subsection{Reset without a reset input (3 points)}
+\question{How can the TAP controller reset when it has no separate reset signal?}
+\answer Hold TMS high for at least five rising edges of TCK. From any of the 16 TAP states, these transitions reach Test-Logic-Reset. Keep TMS high to remain there. Then apply TMS=0 on the next rising edge to enter Run-Test/Idle. The complete rebuilt transition table makes the reset path explicit.
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule Current state&TMS=0 next state&TMS=1 next state\\\midrule
+Test-Logic-Reset&Run-Test/Idle&Test-Logic-Reset\\
+Run-Test/Idle&Run-Test/Idle&Select-DR-Scan\\
+Select-DR-Scan&Capture-DR&Select-IR-Scan\\
+Capture-DR&Shift-DR&Exit1-DR\\
+Shift-DR&Shift-DR&Exit1-DR\\
+Exit1-DR&Pause-DR&Update-DR\\
+Pause-DR&Pause-DR&Exit2-DR\\
+Exit2-DR&Shift-DR&Update-DR\\
+Update-DR&Run-Test/Idle&Select-DR-Scan\\
+Select-IR-Scan&Capture-IR&Test-Logic-Reset\\
+Capture-IR&Shift-IR&Exit1-IR\\
+Shift-IR&Shift-IR&Exit1-IR\\
+Exit1-IR&Pause-IR&Update-IR\\
+Pause-IR&Pause-IR&Exit2-IR\\
+Exit2-IR&Shift-IR&Update-IR\\
+Update-IR&Run-Test/Idle&Select-DR-Scan\\
+\bottomrule
+\end{tabular}
+\end{center}
+The repository checker starts from every state and verifies that five consecutive TMS ones reach reset.
+
+\subsection{Origins of a and p (3 points)}
+\question{Do controls $a$ and $p$ come from Decoder 2 or directly from the TAP controller?}
+\answer They come from the instruction-dependent decoding in Decoder 2. Control $a$ selects the wrapper/TAM data route. Multiplexer $p$ selects between that result and the bypass register. Its lower input is the bypass-register output, not the instruction-register output. The instruction register has a separate route to the final multiplexer $q$. The TAP controller instead supplies the phase of the operation, such as capture, shift, or update. The same TAP state can be used with several instructions, so state alone cannot select the instruction-dependent data-register route.
+
+\subsection{TDO instruction/data selection q (4 points)}
+\question{Explain how control $q$ is decoded.}
+\answer The final multiplexer has two data inputs: the instruction-register output and the selected data-register output from $p$. It must choose the instruction register in Shift-IR and the selected data register in Shift-DR. If $q=1$ selects the instruction input, a valid decode for the observed shift phases is
+\[
+q=\mathbb{1}\{\text{TAP state is Shift-IR}\}.
+\]
+Reverse the polarity if the physical multiplexer labels use the opposite input ordering. Decode $q$ from the TAP state. A value for non-shift phases may be chosen consistently with the surrounding implementation, because no shifted bit is observed then. The expression Shift-IR OR Shift-DR would be one in both shift phases and therefore cannot select the two different sources. A separate TDO output-enable function may use those phases, but it is not the selection control $q$ drawn here.
+
+\subsection{External testing through the serial wrapper interface (5 points)}
+\question{The IEEE 1149.1 instruction 1500Test enables the wrappers. Their instructions include Bypass, InTest for core logic, and ExTest for interconnections or user-defined logic. Describe the instruction, data, and path sequence for external testing of I1--I4 using WSI--WSO.}
+\answer Use the following sequence.
+\begin{enumerate}
+\item Reset the TAP, then use Capture-IR, Shift-IR, and Update-IR to install the 1500Test instruction. Instruction encodings are implementation-defined and are not supplied in the figure.
+\item Select the wrapper instruction path. Shift the ExTest instruction for both wrappers through WSI, WIR1, WIR2, and WSO. Update the WIRs together. Keep the IEEE 1149.1 instruction at 1500Test while issuing the wrapper controls.
+\item Select the wrapper data path, rather than WIR. Shift a test vector into the boundary-register scan path. Core 1's output-wrapper cells hold the values that will drive the user-defined logic. Other wrapper bits can be don't-cares where they do not affect the observed interconnections.
+\item Update the output-wrapper latches to apply the vector, allow the interconnection logic to settle, and capture the response in Core 2's input-wrapper cells. The relevant functional path is Core 1 output WBR, I1--I4 and user-defined logic, Core 2 input WBR.
+\item Shift out the captured boundary-register response through WSO and the selected IEEE 1149.1 data path to TDO. Compare against the expected response. Scan in the next vector while scanning out the previous response where the wrapper timing permits. Repeat update, capture, and shift until the test set is complete.
+\end{enumerate}
+InTest is not the correct wrapper instruction for this external test. The core's internal scan-chain contents are not the observations used to test the inter-core connections. The exact total shift length depends on the WBR configuration and bypass choices, which are not numerically specified in this question.
+
+\subsection{External testing through the parallel TAM (5 points)}
+\question{Describe the corresponding external-test procedure when data travels through the three-bit TAM.}
+\answer The instruction setup is unchanged: load 1500Test through the TAP, then load and update ExTest in the WIRs. Select each wrapper's boundary-data route in the TAM test group. In the drawing the test group consists of two internal-scan outputs and a wrapper-data output. The wrapper-data route, rather than an arbitrary reassignment of all internal chains to TAM lanes, carries the external-test data.
+
+Shift the boundary test vector through TAM In to the relevant WBR cells, update Core 1's output-wrapper latches, and capture the resulting I1--I4 response in Core 2's input-wrapper cells. Shift the captured WBR response to TAM Out, overlapping loading the next vector where supported. Wrapper capture, shift, and update remain under WCS control. The data transport changes from WSI--WSO to the selected TAM boundary-register route; the external launch and capture points remain the same. Other TAM lanes may be unused during this wrapper-only test.
+
+\subsection{Internal-chain organization and minimum shift length (5 points)}
+\question{Organize chains 1--4 through the shown TAM to minimize the internal scan-test time. Their lengths are 120, 240, 240, and 120 bits respectively.}
+\answer Preserve the fixed lane connectivity shown in the diagram. Select
+\[
+\mathrm{TAM}_0:\ S_1(120)\longrightarrow S_3(240),\qquad
+\mathrm{TAM}_1:\ S_2(240)\longrightarrow S_4(120).
+\]
+Both internal-scan paths have length 360. The third TAM route serves wrapper data and serial wrapper-related selections. The picture does not provide an independent third internal-scan lane or a crossbar that can freely permute the four chains among three lanes.
+
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[>=Latex,font=\small,b/.style={draw,align=center,minimum width=34mm,minimum height=8mm}]
+\node[b] (s1) {Core 1: chain 1\\120 bits};
+\node[b,right=20mm of s1] (s3) {Core 2: chain 3\\240 bits};
+\node[b,below=9mm of s1] (s2) {Core 1: chain 2\\240 bits};
+\node[b,right=20mm of s2] (s4) {Core 2: chain 4\\120 bits};
+\node[b,below=9mm of s2] (w1) {Wrapper data\\route 1};
+\node[b,right=20mm of w1] (w2) {Wrapper data\\route 2};
+\foreach \a/\b/\n in {s1/s3/0,s2/s4/1,w1/w2/2}{
+\draw[<-](\a.west)--++(-12mm,0)node[left]{TAM In \n};
+\draw[->](\a)--(\b);
+\draw[->](\b.east)--++(12mm,0)node[right]{TAM Out \n};}
+\end{tikzpicture}
+\caption{Shown parallel test groups. The wrapper route is not a freely assignable third internal-scan channel.}
+\end{figure}
+
+\begin{center}\small
+\begin{tabular}{cll}
+\toprule Control & Selection for the two 360-bit paths & Source interpretation\\\midrule
+$c=0$&TAM upper lane into chain 1&$c=1$ instead selects chain 2's tail\\
+$b=1$&TAM middle lane into chain 2&$b=0$ instead selects an input-WBR tail\\
+$g=1$&Core 1 test output group&Fixed group: chain 1, chain 2, wrapper data\\
+$j=0$&Upper group lane into chain 3&$j=1$ instead selects chain 4's tail\\
+$i=1$&Middle group lane into chain 4&$i=0$ instead selects an input-WBR tail\\
+$n=1$&Core 2 test output group&Export test-group data to TAM Out\\
+\bottomrule
+\end{tabular}
+\end{center}
+The 360-bit maximum is also a lower bound under these static TAM-only choices: to export Core 1 responses through its test group, chain 3 is fed either by chain 1's 120-bit route or, with the alternate local serial selection, by chain 4's 120-bit route. Either choice places at least 120 additional internal bits before its own 240 bits. The displayed selection achieves that bound without introducing a different cross-lane connection.
+
+Let $P$ be the number of test vectors applied to the combined two-core test. With scan-out overlapped with the next scan-in, an initial fill and final drain, and one capture clock per vector,
+\[
+\boxed{T=360(P+1)+P\quad\text{clock periods}.}
+\]
+Multiply by the clock period to obtain time. This expression assumes static routing and the common test clock stated in the question. The number of patterns is not supplied, so a numerical total cannot be computed.
+
+If a different architecture had a fully flexible three-lane crossbar, assigning $(S_1+S_4)$ to one lane and $S_2,S_3$ to the other two would give 240 bits per lane. That is an unrestricted packing lower bound. It is not an implementable answer for the multiplexers actually shown here, which do not provide the required independent lane assignment.
+
+\section*{Verification and reconstruction limits}
+The repository's standard-library checker verifies the 2020 March-test consistency choices, both transition polarities for the relevant March tests, 28 conventional two-cell single-fault March C-minus cases, and the TAP reset sequence from all 16 states. The TAM answer is based on tracing the drawn multiplexer connectivity. The BILBO answer includes an explicit gate-derived recurrence because the controls in the photographed source are partly obscured. A matching clearer circuit is used only to resolve the stated selector convention. No numerical instruction opcodes, unseen test ports, or extra scan crossbar are assumed.

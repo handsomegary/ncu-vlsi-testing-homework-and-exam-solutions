@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.pdf binary
+*.v -text
+*.vh -text
+*.sv -text
+*.cpp -text
+*.h -text

@@ -1,0 +1,102 @@
+[
+  {
+    "path": "hw1/homework_1.pdf",
+    "sha256": "dcbf20775c9ab00251c59e37ca868fb34bae880aa480c955784994519bd28c3c",
+    "original_bytes": true
+  },
+  {
+    "path": "hw2/homework_2.pdf",
+    "sha256": "6680346a4be8567ffd9122663a7a36164a0681334df3b52a5c3422f02875f4d7",
+    "original_bytes": true
+  },
+  {
+    "path": "hw3/homework_3.pdf",
+    "sha256": "b08da556269915f1fe2251e5af5bba5aabc38ee381bdfdc3d8e23d3a94a2a987",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_1_BIST.v",
+    "sha256": "1788a6f9d932b25d531d26bd1a8aa85ad7194b6e37ec5885ad8f0059e34cfe17",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_1_full_adder.v",
+    "sha256": "a3aa987d2e082d32c1b28a404013eb15c33959d3392050c183cd31a2b777679a",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_1_main.v",
+    "sha256": "5ebbb8daf42b4e16826692b0553868f7b051651a9763b2aa248416d595015d88",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_1_RCA.v",
+    "sha256": "acd2073be764c1707a0722c37a151354a97dd1d29e91ba7d05ca6ad1a9bcfe38",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_1_testbench.v",
+    "sha256": "18445c7ebd5b92ba65e83869a6baa1f759debbc12e40950886744aedb00056de",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_3.v",
+    "sha256": "b9e968994ae815f7ec71c5918c9f14dc4fe057a497bf71a8b7fad9d11cfdfd5a",
+    "original_bytes": true
+  },
+  {
+    "path": "hw1/source/HW1_3_testbench.v",
+    "sha256": "58dc2114730a995c7e3ef96d2632a9e8da16ce85b4a13ffa10cb143bcfdd6a1d",
+    "original_bytes": true
+  },
+  {
+    "path": "hw2/source/HW2_3.v",
+    "sha256": "2db2269bde64593f41bc804853c863b4b88c27db66a84a145428835befca21f7",
+    "original_bytes": true
+  },
+  {
+    "path": "hw2/source/HW2_3_fault_free.v",
+    "sha256": "310786d47ca0210c577c7f54286b8502d4b48559a0ca134554ba7344ff3001f1",
+    "original_bytes": true
+  },
+  {
+    "path": "hw2/source/HW2_3_fault_free_tb.v",
+    "sha256": "c153969b9b7d64561ec40c2262213edd8e7a01939b33f7adace09c93e7837705",
+    "original_bytes": true
+  },
+  {
+    "path": "hw2/source/HW2_3_mux.v",
+    "sha256": "d88aaa17cdb4f7ce7ce3aa9da5a4d9979cefdc57c4f053a84b8c20fd576cb659",
+    "original_bytes": true
+  },
+  {
+    "path": "hw2/source/HW2_3_tb.v",
+    "sha256": "c4c33a029d3bba5aadd7a1effda2b1993ea3c9d5b2f212a182c6976bf05c5ccf",
+    "original_bytes": true
+  },
+  {
+    "path": "hw3/source/circuit.v",
+    "sha256": "4f9e04a56da6ffa94af14887222bc50ae6c1890e063b5c5bc1ec0071a2b4cd32",
+    "original_bytes": true
+  },
+  {
+    "path": "hw3/source/HW3_1.v",
+    "sha256": "af62fc14242ec7d40b6d9c529f502e546d433a8fe0101693d4b3b0cb3d2d17d6",
+    "original_bytes": true
+  },
+  {
+    "path": "hw3/source/HW3_1_tb.v",
+    "sha256": "1931bc600c48351fb5b03eccf5f3d3f2ec8cec73513a4c4c26edfe3f1a148324",
+    "original_bytes": true
+  },
+  {
+    "path": "hw3/source/HW3_2.cpp",
+    "sha256": "d7023d23782e40439c95356910084e87157308cbd65a3b6b6363567f9c0457ad",
+    "original_bytes": true
+  },
+  {
+    "path": "hw3/source/LFSR.v",
+    "sha256": "3bf84b72b8d324a89df8cf037c1ad688fb10c007cde86610fe55dd02e173f3e8",
+    "original_bytes": true
+  }
+]
